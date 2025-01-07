@@ -9,7 +9,7 @@ Behind the scenes, this starter uses the https://github.com/neuland/pug4j[pug4j]
 == Environment
 
 image:https://img.shields.io/badge/JDK-17+-green.svg["JDK"]
-image:https://img.shields.io/badge/Spring%20Boot-3.4.1-green.svg["Spring Boot"]
+image:https://img.shields.io/badge/Spring%20Boot-3.4.1+-green.svg["Spring Boot"]
 
 == GitHub, Factoids and Stats
 
@@ -34,7 +34,7 @@ The usage is pretty straightforward as you can expect for any Spring Boot Starte
 ----
 ...
 dependencies {
-  compile "ru.ilya.lysenko:pug-spring-boot-starter:3.0.1"
+  compile "ru.ilya.lysenko:pug-spring-boot-starter:3.0.1-SNAPSHOT"
 }
 ...
 ----
@@ -49,7 +49,7 @@ dependencies {
     <dependency>
       <groupId>ru.ilya.lysenko</groupId>
       <artifactId>pug-spring-boot-starter</artifactId>
-      <version>3.0.1</version>
+      <version>3.0.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
@@ -77,7 +77,7 @@ You can add https://github.com/neuland/pug4j#helpers[helpers] automatically usin
 ----
 package demo;
 
-import com.domingosuarez.boot.autoconfigure.pug4j.JadeHelper;
+import pug.autoconfigure.pug4j.JadeHelper;
 
 @PugHelper
 public class Util {
@@ -101,12 +101,12 @@ html
 
 
 === Customize the helper's name
-You can customize the helper's name using the https://github.com/domix/jade4j-spring-boot-starter/blob/master/src/main/java/com/domingosuarez/boot/autoconfigure/pug4j/PugHelper.java[PugHelper] annotation
+You can customize the helper's name using the https://github.com/0x100/pug-spring-boot-starter/blob/master/src/main/java/pug/autoconfigure/pug4j/PugHelper.java[PugHelper] annotation
 [source,java]
 ----
 package demo;
 
-import pug4j.autoconfigure.ru.ilya.lysenko.PugHelper;
+import pug.autoconfigure.pug4j.PugHelper;
 
 @PugHelper("myId") // <1>
 public class Util {
@@ -128,7 +128,7 @@ html
       #{myId.format(4)}
 ----
 
----
+'''
 
 == Configuration
 
@@ -147,9 +147,3 @@ spring.pug4j.mode, String, 'HTML'
 spring.pug4j.contentType, String, 'text/html'
 spring.pug4j.resolver.order, Integer, Ordered.LOWEST_PRECEDENCE - 50
 |===
-
----
-
-== Complete demo application
-
-Please take a look into this https://github.com/domix/jade4j-spring-boot-starter-showcase[application] if you want to checkout a fully application.

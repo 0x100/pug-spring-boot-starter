@@ -126,7 +126,6 @@ publishing {
                 root.appendNode('name', project.pomName)
                 root.appendNode('description', project.description)
                 root.appendNode('url', 'https://github.com/0x100/pug-spring-boot-starter')
-                root.appendNode('inceptionYear', '2025')
                 root.appendNode('packaging', 'jar')
 
                 def scm = root.appendNode('scm')

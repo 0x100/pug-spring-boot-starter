@@ -1,9 +1,9 @@
-3.0.1 / 2025-01-07
+3.0.1-SNAPSHOT / 2025-01-07
 ==================
 
 * upgraded to SpringBoot 3.4.1
 * fixed compatibility issues with SpringBoot 3
-* setting version to 3.0.1 / 2025-01-07
+* setting version to 3.0.1-SNAPSHOT / 2025-01-07
 
 2.0.4.RELEASE / 2018-08-14
 ==================

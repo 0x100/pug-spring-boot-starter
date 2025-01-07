@@ -201,9 +201,9 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.domingosuarez.boot.autoconfigure.pug4j.support;
+package pug.autoconfigure.pug4j.support;
 
-import com.domingosuarez.boot.autoconfigure.pug4j.PugHelper;
+import pug.autoconfigure.pug4j.PugHelper;
 
 /**
  * Created by domix on 12/26/14.

@@ -201,9 +201,9 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.domingosuarez.boot.autoconfigure.pug4j;
+package pug.autoconfigure.pug4j;
 
-import com.domingosuarez.boot.autoconfigure.pug4j.support.TestConfig;
+import pug.autoconfigure.pug4j.support.TestConfig;
 import de.neuland.pug4j.PugConfiguration;
 import de.neuland.pug4j.spring.view.PugView;
 import de.neuland.pug4j.spring.view.PugViewResolver;

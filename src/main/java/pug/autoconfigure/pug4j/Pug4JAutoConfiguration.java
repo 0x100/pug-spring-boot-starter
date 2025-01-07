@@ -201,34 +201,162 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.domingosuarez.boot.autoconfigure.pug4j;
+package pug.autoconfigure.pug4j;
 
-import org.springframework.core.annotation.AliasFor;
-import org.springframework.stereotype.Component;
+import de.neuland.pug4j.Pug4J;
+import de.neuland.pug4j.PugConfiguration;
+import de.neuland.pug4j.spring.template.SpringTemplateLoader;
+import de.neuland.pug4j.spring.view.PugViewResolver;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.Assert;
 
-import java.lang.annotation.*;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.Servlet;
+import java.util.Map;
 
 /**
- * Indicates that an annotated class is a "Pug Helper" (e.g. utility object in the pug context).
- * <p/>
- * <p>This annotation serves as a specialization of {@link Component @Component},
- * allowing for implementation classes to be autodetected through classpath scanning.
+ * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration Auto-configuration} for pug4j.
  *
  * @author Domingo Suarez Torres
- * @see org.springframework.stereotype.Component
- * @see org.springframework.context.annotation.ClassPathBeanDefinitionScanner
+ * @author Ilya Lysenko
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Component
-public @interface PugHelper {
-  /**
-   * The value may indicate a suggestion for a logical component name,
-   * to be turned into a Spring bean in case of an autodetected component.
-   *
-   * @return the suggested component name, if any
-   */
-  @AliasFor(annotation = Component.class, attribute = "value")
-  String value() default "";
+@Configuration
+@ConditionalOnClass(SpringTemplateLoader.class)
+@AutoConfigureAfter(WebMvcAutoConfiguration.class)
+public class Pug4JAutoConfiguration {
+  public static final String DEFAULT_PREFIX = "classpath:/templates/";
+
+  public static final String DEFAULT_SUFFIX = ".pug";
+
+  @Configuration
+  @ConditionalOnMissingBean(name = "defaultSpringTemplateLoader")
+  public static class DefaultTemplateResolverConfiguration implements EnvironmentAware {
+
+    @Autowired
+    private final ResourceLoader resourceLoader = new DefaultResourceLoader();
+
+    private Environment environment;
+
+    @Override
+    public void setEnvironment(Environment environment) {
+      this.environment = environment;
+    }
+
+    @PostConstruct
+    public void checkTemplateLocationExists() {
+      Boolean checkTemplateLocation = this.environment.getProperty("spring.pug4j.checkTemplateLocation", Boolean.class, true);
+      if (checkTemplateLocation) {
+        Resource resource = this.resourceLoader.getResource(this.environment.getProperty("spring.pug4j.prefix", DEFAULT_PREFIX));
+        Assert.state(resource.exists(), "Cannot find template location: "
+          + resource + " (please add some templates or check your pug4j configuration)");
+      }
+    }
+
+    @Bean
+    public SpringTemplateLoader defaultSpringTemplateLoader() {
+      SpringTemplateLoader resolver = new SpringTemplateLoader();
+
+      resolver.setTemplateLoaderPath(this.environment.getProperty("spring.pug4j.prefix", DEFAULT_PREFIX));
+      resolver.setSuffix(this.environment.getProperty("spring.pug4j.suffix", DEFAULT_SUFFIX));
+      resolver.setEncoding(this.environment.getProperty("spring.pug4j.encoding", "UTF-8"));
+      return resolver;
+    }
+
+    @Bean
+    public PugConfiguration defaultPugConfiguration() {
+      PugConfiguration configuration = new PugConfiguration();
+      configuration.setCaching(this.environment.getProperty("spring.pug4j.caching", Boolean.class, true));
+      configuration.setTemplateLoader(defaultSpringTemplateLoader());
+      configuration.setPrettyPrint(this.environment.getProperty("spring.pug4j.prettyPrint", Boolean.class, false));
+      configuration.setMode(this.environment.getProperty("spring.pug4j.mode", Pug4J.Mode.class, Pug4J.Mode.HTML));
+      return configuration;
+    }
+
+  }
+
+
+  @Configuration
+  @ConditionalOnClass({Servlet.class})
+  @ConditionalOnWebApplication
+  protected static class Pug4JViewResolverConfiguration implements EnvironmentAware {
+
+    private Environment environment;
+
+    @Autowired
+    private PugConfiguration pugConfiguration;
+
+    @Autowired
+    private SpringTemplateLoader templateEngine;
+
+    @Override
+    public void setEnvironment(Environment environment) {
+      this.environment = environment;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "pug4jViewResolver")
+    public PugViewResolver pug4jViewResolver() {
+      PugViewResolver resolver = new PugViewResolver();
+      resolver.setConfiguration(pugConfiguration);
+
+      resolver.setContentType(appendCharset(
+        this.environment.getProperty("spring.pug4j.contentType", "text/html"),
+        templateEngine.getEncoding()));
+
+      resolver.setViewNames(this.environment.getProperty("spring.pug4j.viewNames", String[].class));
+      // This resolver acts as a fallback resolver (e.g. like a
+      // InternalResourceViewResolver) so it needs to have low precedence
+      resolver.setOrder(this.environment.getProperty("spring.pug4j.resolver.order", Integer.class, Ordered.LOWEST_PRECEDENCE - 50));
+      return resolver;
+    }
+
+    @Bean
+    public BeanPostProcessor pug4jBeanPostProcessor() {
+      return new BeanPostProcessor() {
+
+        @Override
+        public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+          return bean;
+        }
+
+        @Override
+        public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+          PugHelper annotation = AnnotationUtils.findAnnotation(bean.getClass(), PugHelper.class);
+          if (annotation != null) {
+            Map<String, Object> variables = pugConfiguration.getSharedVariables();
+            variables.put(beanName, bean);
+            pugConfiguration.setSharedVariables(variables);
+          }
+
+          return bean;
+        }
+      };
+    }
+
+
+    private String appendCharset(String type, String charset) {
+      if (type.contains("charset=")) {
+        return type;
+      }
+      return type + ";charset=" + charset;
+    }
+
+  }
+
 }

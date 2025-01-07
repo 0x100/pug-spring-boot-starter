@@ -201,29 +201,34 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.domingosuarez.boot.autoconfigure.pug4j;
+package pug.autoconfigure.pug4j;
 
-import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.util.ClassUtils;
+import org.springframework.core.annotation.AliasFor;
+import org.springframework.stereotype.Component;
+
+import java.lang.annotation.*;
 
 /**
- * {@link org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider} that provides availability information for
- * pug4j view templates
+ * Indicates that an annotated class is a "Pug Helper" (e.g. utility object in the pug context).
+ * <p/>
+ * <p>This annotation serves as a specialization of {@link Component @Component},
+ * allowing for implementation classes to be autodetected through classpath scanning.
  *
  * @author Domingo Suarez Torres
+ * @see org.springframework.stereotype.Component
+ * @see org.springframework.context.annotation.ClassPathBeanDefinitionScanner
  */
-public class Pug4JTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
-
-  @Override
-  public boolean isTemplateAvailable(String view, Environment environment, ClassLoader classLoader, ResourceLoader resourceLoader) {
-    if (ClassUtils.isPresent("de.neuland.pug4j.spring.template.SpringTemplateLoader", classLoader)) {
-      String prefix = environment.getProperty("spring.pug4j.prefix", Pug4JAutoConfiguration.DEFAULT_PREFIX);
-      String suffix = environment.getProperty("spring.pug4j.suffix", Pug4JAutoConfiguration.DEFAULT_SUFFIX);
-      return resourceLoader.getResource(prefix + view + suffix).exists();
-    }
-
-    return false;
-  }
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Component
+public @interface PugHelper {
+  /**
+   * The value may indicate a suggestion for a logical component name,
+   * to be turned into a Spring bean in case of an autodetected component.
+   *
+   * @return the suggested component name, if any
+   */
+  @AliasFor(annotation = Component.class, attribute = "value")
+  String value() default "";
 }

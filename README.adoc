@@ -1,11 +1,6 @@
-= pug4j Spring Boot Starter
+= Pug (Jade) Spring Boot Starter
 
-image:https://img.shields.io/travis/domix/jade4j-spring-boot-starter/master.svg?style=flat["Build Status", link="https://travis-ci.org/domix/jade4j-spring-boot-starter"]
-image:https://img.shields.io/coveralls/domix/spring-boot-starter-jade4j/master.svg?style=flat["Coverage Status", link="https://coveralls.io/r/domix/spring-boot-starter-jade4j"]
-image:https://img.shields.io/badge/license-ASF2-blue.svg?style=flat["Apache License 2", link="http://www.apache.org/licenses/LICENSE-2.0.txt"]
-image:https://badges.gitter.im/Join%20Chat.svg["Gitter", link="https://gitter.im/domix/spring-boot-starter-jade4j?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"]
-
----
+'''
 
 This Starter provides you the minimal and required configuration to use https://pugjs.org[pug/jade templates] as views in your Spring Boot application.
 
@@ -13,29 +8,20 @@ Behind the scenes, this starter uses the https://github.com/neuland/pug4j[pug4j]
 
 == Environment
 
-image:https://img.shields.io/badge/JDK-8.0+-F30000.svg?style=flat["JDK", link="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html"]
-image:https://img.shields.io/badge/Spring%20Framework-5.0.x-green.svg?style=flat&["Spring Framework", link="https://docs.spring.io/spring/docs/5.0.x/spring-framework-reference/"]
-image:https://img.shields.io/badge/Spring%20Boot-2.0.x-green.svg?style=flat&["Spring Boot", link="https://docs.spring.io/spring-boot/docs/2.0.x/reference/htmlsingle/"]
-
-== Download
-
-Maven Central
-image:https://maven-badges.herokuapp.com/maven-central/com.domingosuarez.boot/jade4j-spring-boot-starter/badge.svg?style=flat["Download",link="https://maven-badges.herokuapp.com/maven-central/com.domingosuarez.boot/jade4j-spring-boot-starter"]
-
-JCenter
-image:https://api.bintray.com/packages/domix/spring-boot/jade4j-spring-boot-starter/images/download.svg["Download", link="https://bintray.com/domix/spring-boot/jade4j-spring-boot-starter/_latestVersion"]
+image:https://img.shields.io/badge/JDK-17+-green.svg["JDK"]
+image:https://img.shields.io/badge/Spring%20Boot-3.4.1-green.svg["Spring Boot"]
 
 == GitHub, Factoids and Stats
 
-image:https://img.shields.io/github/forks/domix/jade4j-spring-boot-starter.svg?style=flat["Forks", link="https://github.com/domix/jade4j-spring-boot-starter/network"]
-image:https://img.shields.io/github/release/domix/jade4j-spring-boot-starter.svg?style=flat["Release", link="https://github.com/domix/jade4j-spring-boot-starter/releases"]
-image:https://img.shields.io/github/issues/domix/jade4j-spring-boot-starter.svg?style=flat["Issues", link="https://github.com/domix/jade4j-spring-boot-starter/issues"]
+image:https://img.shields.io/github/forks/0x100/pug-spring-boot-starter.svg?style=flat["Forks", link="https://github.com/0x100/pug-spring-boot-starter/network"]
+image:https://img.shields.io/github/release/0x100/pug-spring-boot-starter.svg?style=flat["Release", link="https://github.com/0x100/pug-spring-boot-starter/releases"]
+image:https://img.shields.io/github/issues/0x100/pug-spring-boot-starter.svg?style=flat["Issues", link="https://github.com/0x100/pug-spring-boot-starter/issues"]
 
 ++++
-<script type="text/javascript" src="http://www.openhub.net/p/721264/widgets/project_basic_stats.js"></script>
+<script type="text/javascript" src="https://openhub.net/p/pug-spring-boot-starter/widgets/project_basic_stats.js"></script>
 ++++
 
----
+'''
 
 == Usage
 
@@ -48,7 +34,7 @@ The usage is pretty straightforward as you can expect for any Spring Boot Starte
 ----
 ...
 dependencies {
-  compile "com.domingosuarez.boot:jade4j-spring-boot-starter:2.0.4.RELEASE"
+  compile "ru.ilya.lysenko:pug-spring-boot-starter:3.0.1"
 }
 ...
 ----
@@ -61,9 +47,9 @@ dependencies {
   ...
   <dependencies>
     <dependency>
-      <groupId>com.domingosuarez.boot</groupId>
-      <artifactId>jade4j-spring-boot-starter</artifactId>
-      <version>2.0.4.RELEASE</version>
+      <groupId>ru.ilya.lysenko</groupId>
+      <artifactId>pug-spring-boot-starter</artifactId>
+      <version>3.0.1</version>
     </dependency>
   </dependencies>
 </project>
@@ -120,7 +106,7 @@ You can customize the helper's name using the https://github.com/domix/jade4j-sp
 ----
 package demo;
 
-import com.domingosuarez.boot.autoconfigure.pug4j.PugHelper;
+import pug4j.autoconfigure.ru.ilya.lysenko.PugHelper;
 
 @PugHelper("myId") // <1>
 public class Util {

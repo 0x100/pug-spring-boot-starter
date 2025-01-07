@@ -201,16 +201,29 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.domingosuarez.boot.autoconfigure.pug4j.support;
+package pug.autoconfigure.pug4j;
 
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.ClassUtils;
 
 /**
- * Created by domix on 12/26/14.
+ * {@link org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider} that provides availability information for
+ * pug4j view templates
+ *
+ * @author Domingo Suarez Torres
  */
-@Configuration
-@ComponentScan
-public class TestConfig {
+public class Pug4JTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
 
+  @Override
+  public boolean isTemplateAvailable(String view, Environment environment, ClassLoader classLoader, ResourceLoader resourceLoader) {
+    if (ClassUtils.isPresent("de.neuland.pug4j.spring.template.SpringTemplateLoader", classLoader)) {
+      String prefix = environment.getProperty("spring.pug4j.prefix", Pug4JAutoConfiguration.DEFAULT_PREFIX);
+      String suffix = environment.getProperty("spring.pug4j.suffix", Pug4JAutoConfiguration.DEFAULT_SUFFIX);
+      return resourceLoader.getResource(prefix + view + suffix).exists();
+    }
+
+    return false;
+  }
 }
